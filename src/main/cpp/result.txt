@@ -1,0 +1,4 @@
+[match.cpp:1]: (information) Include file: <string> not found. Please note: Cppcheck does not need standard library headers to get proper results.
+[match.cpp:2]: (information) Include file: <algorithm> not found. Please note: Cppcheck does not need standard library headers to get proper results.
+[match.cpp:3]: (information) Include file: <cstring> not found. Please note: Cppcheck does not need standard library headers to get proper results.
+[match.cpp:4]: (information) Include file: <iostream> not found. Please note: Cppcheck does not need standard library headers to get proper results.
