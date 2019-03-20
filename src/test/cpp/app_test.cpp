@@ -7,6 +7,6 @@
 
 int main() {
     cpp_learn::Greeter greeter;
-    assert(greeter.greeting().compare("Hello, World!") == 0);
+    assert(greeter.greeting() == "Hello, World!");
     return 0;
 }

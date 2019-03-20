@@ -8,7 +8,7 @@
 
 namespace cpp_learn {
     class Greeter {
-        public:
+    public:
         std::string greeting();
     };
 }
