@@ -1,4 +1,5 @@
 #include <cstdio>
+#include <cstdlib>
 #include <string>
 
 struct Object
@@ -8,10 +9,10 @@ struct Object
 
 struct IComparable : virtual Object
 {
-    virtual int compare(const Object*, const Object*) const = 0;
+    virtual int compare(const Object& o) const = 0;
 };
 
-class Integer : public virtual Object
+class Integer : public virtual Object, public virtual IComparable
 {
     int n;
     public:
@@ -21,33 +22,45 @@ class Integer : public virtual Object
         return std::to_string(n);
     }
 
+    int compare(const Object& o) const override
+    {
+        auto num = dynamic_cast<const Integer*>(&o);
+        return n - num->n;
+    }
+
 };
 
 
-class String : public virtual Object
+class String : public virtual Object, public virtual IComparable
 {
     std::string str;
     public:
-    String(const std::string str):str{str}{}
+    String(const std::string& str):str{str}{}
     const std::string to_string() const override
     {
         return str;
     }
+
+    int compare(const Object& o) const override
+    {
+        auto s = dynamic_cast<const String*>(&o);
+        return str.compare(s->str);
+    }
 };
 
-class node : virtual Object
+class node : public virtual Object
 {
     Object* key = nullptr;
     Object* value = nullptr;
-    Object* left = nullptr;
-    Object* right = nullptr;
+    node* left = nullptr;
+    node* right = nullptr;
     public:
     node(Object* key, Object* value)
     :key{key}, value{value}
     {};
     const std::string to_string() const override
     {
-        return "Node";
+        return std::to_string((long long) this);
     }
     
     Object* getKey()
@@ -59,21 +72,46 @@ class node : virtual Object
         return value;
     }
     
+    node* getRight()
+    {
+        return right;
+    }
+    
+    node* getLeft()
+    {
+        return left;
+    }
 };
 
-class bst : virtual Object, virtual IComparable
+class bst : virtual Object
 {
     private:
     node* root;
     typedef void (*Function)(const Object&, const Object&);
-    void add_recursive(node* bstnode, Object* key, Object* value)
+    void add_recursive(node* bstnode, Object& key, Object& value)
     {
-        if(root == nullptr)
+        if(bstnode == nullptr)
         {
-            root = new node{key, value};
+            bstnode = new node{&key, &value};
+            return;
+        }   
+        
+        auto aux = dynamic_cast<const Integer*>(&value);
+        int c = aux ? 
+        aux->compare(*bstnode->getValue()) :  dynamic_cast<const String*>(&value)->compare(*bstnode->getValue());
+        
+        if (c == 0)
+        {
             return;
         }
-        int c = compare(key, bstnode->getKey());
+
+        if (c > 0)
+        {
+            add_recursive(bstnode->getRight(), key , value);
+        }else
+        {
+            add_recursive(bstnode->getLeft(), key , value);
+        }
     }
 
     public:
@@ -90,17 +128,13 @@ class bst : virtual Object, virtual IComparable
     void add(Object* key, Object* value)
     {
         puts("Aniade!");
-        add_recursive(this->root, key, value);
+        add_recursive(this->root, *key, *value);
     }
 
     void iterate(Function)
     {
     }
 
-    int compare(const Object*, const Object*) const override
-    {
-        return 0;
-    }
 };
 
 void show_pair(const IComparable& key, const Object& value)
@@ -114,9 +148,9 @@ int main()
     b.add(new Integer(1), new String("uno"));
     b.add(new Integer(10), new String("diez"));
     b.add(new Integer(5), new String("cinco"));
-    b.add(new Integer(8), new String("ocho"));
-    b.add(new Integer(7), new String("siete"));
-    b.add(new Integer(2), new String("dos"));
+    // b.add(new Integer(8), new String("ocho"));
+    // b.add(new Integer(7), new String("siete"));
+    // b.add(new Integer(2), new String("dos"));
 
     // b.iterate(show_pair);
     // Object* obj;
