@@ -1,166 +1,93 @@
+#include "bst.h"
 #include <cstdio>
-#include <cstdlib>
-#include <string>
 
-struct Object
+bst::bst()
+:root{nullptr}
+{}
+
+
+void add_recursive(node*& bst_node, IComparable*& key, Object*& value)
 {
-    virtual const std::string to_string() const = 0;
-};
-
-struct IComparable : virtual Object
-{
-    virtual int compare(const Object& o) const = 0;
-};
-
-class Integer : public virtual Object, public virtual IComparable
-{
-    int n;
-    public:
-    Integer(int n):n{n}{}
-    const std::string to_string() const override
+    if(bst_node == nullptr)
     {
-        return std::to_string(n);
+        bst_node = new node{};
+        bst_node->key = key;
+        bst_node->value = value;
+        return;
     }
-
-    int compare(const Object& o) const override
-    {
-        auto num = dynamic_cast<const Integer*>(&o);
-        return n - num->n;
-    }
-
-};
-
-
-class String : public virtual Object, public virtual IComparable
-{
-    std::string str;
-    public:
-    String(const std::string& str):str{str}{}
-    const std::string to_string() const override
-    {
-        return str;
-    }
-
-    int compare(const Object& o) const override
-    {
-        auto s = dynamic_cast<const String*>(&o);
-        return str.compare(s->str);
-    }
-};
-
-class node : public virtual Object
-{
-    Object* key = nullptr;
-    Object* value = nullptr;
-    node* left = nullptr;
-    node* right = nullptr;
-    public:
-    node(Object* key, Object* value)
-    :key{key}, value{value}
-    {};
-    const std::string to_string() const override
-    {
-        return std::to_string((long long) this);
-    }
-    
-    Object* getKey()
-    {
-        return key;
-    }
-    Object* getValue()
-    {
-        return value;
-    }
-    
-    node* getRight()
-    {
-        return right;
-    }
-    
-    node* getLeft()
-    {
-        return left;
-    }
-};
-
-class bst : virtual Object
-{
-    private:
-    node* root;
-    typedef void (*Function)(const Object&, const Object&);
-    void add_recursive(node* bstnode, Object& key, Object& value)
-    {
-        if(bstnode == nullptr)
-        {
-            bstnode = new node{&key, &value};
-            return;
-        }   
-        
-        auto aux = dynamic_cast<const Integer*>(&value);
-        int c = aux ? 
-        aux->compare(*bstnode->getValue()) :  dynamic_cast<const String*>(&value)->compare(*bstnode->getValue());
-        
-        if (c == 0)
-        {
-            return;
-        }
-
-        if (c > 0)
-        {
-            add_recursive(bstnode->getRight(), key , value);
-        }else
-        {
-            add_recursive(bstnode->getLeft(), key , value);
-        }
-    }
-
-    public:
-    bst(/* args */)
-    {
-        root = nullptr;
-    };
-    ~bst(){};
-    const std::string to_string() const override
-    {
-        return "BST";
-    }
-
-    void add(Object* key, Object* value)
-    {
-        puts("Aniade!");
-        add_recursive(this->root, *key, *value);
-    }
-
-    void iterate(Function)
-    {
-    }
-
-};
-
-void show_pair(const IComparable& key, const Object& value)
-{
-    printf("%s: %s\n", key.to_string().data(), value.to_string().data());
+    int c = bst_node->key->compare_to(*key);
+    if(c == 0)
+        return;
+    if(c>0)
+        add_recursive(bst_node->right, key, value);
+    else
+        add_recursive(bst_node->left, key, value);
 }
 
-int main()
+void bst::add(IComparable* key, Object* value)
 {
-    bst b;
-    b.add(new Integer(1), new String("uno"));
-    b.add(new Integer(10), new String("diez"));
-    b.add(new Integer(5), new String("cinco"));
-    // b.add(new Integer(8), new String("ocho"));
-    // b.add(new Integer(7), new String("siete"));
-    // b.add(new Integer(2), new String("dos"));
+    add_recursive(root, key, value);
+}
 
-    // b.iterate(show_pair);
-    // Object* obj;
-    // if (b.try_find(Integer(2), obj))
-    // {
-    //     puts(obj->to_string().data());
-    // }
-    // else
-    // {
-    //     puts(“Not found”);
-    // }
-    return 0;
+void iterate_recursive(node* bst_node, void (*func)(const IComparable&, const Object&))
+{
+    if ( bst_node == nullptr)
+    {
+        return;
+    }
+    iterate_recursive(bst_node->left, func);
+    func(*(bst_node->key), *(bst_node->value));
+    iterate_recursive(bst_node->right, func);
+}
+
+
+void bst::iterate(void (*func)(const IComparable&, const Object&)) const
+{
+    iterate_recursive(root, func);
+}
+
+bool find_iterate(const node* bst_node, const IComparable& key, const Object& value)
+{
+    if(bst_node == nullptr)
+    {
+        return false;
+    }
+    int c = bst_node->key->compare_to(key);
+    if(c == 0)
+    {
+        return bst_node->value->equals(value);
+    }
+    if(c>0)
+        return find_iterate(bst_node->right, key, value);
+    else
+        return find_iterate(bst_node->left, key, value);
+}
+
+
+bool bst::try_find(const IComparable& key, const Object& value) const
+{
+    return find_iterate(root, key, value);
+}
+
+
+
+void release(node* bst_node)
+{
+    if (bst_node == nullptr)
+    {
+        return;
+    }
+
+    release(bst_node->left);
+    release(bst_node->right);
+    delete bst_node->key;
+    delete bst_node->value;
+    delete bst_node;
+}
+
+
+
+bst::~bst()
+{
+    release(root);
 }
