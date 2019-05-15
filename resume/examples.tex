@@ -1,0 +1,69 @@
+\begin{lstlisting}[language=C++, caption={Examples ref and pointers}]
+#include <cstdio>
+#include <cstdlib>
+
+int main()
+{
+    puts("*******Empezamos con punteros**********");
+    int b = 2;
+    int* a = &b;
+    printf("El valor al que apunta a (*a=b): %d \n",*a);
+    printf("La direccion a la que apunta a que es la de b: %p \n",a);
+    printf("La direccion de b: %p \n",&b);
+    printf("La direccion del puntero a: %p \n",&a);
+
+    // int *c = a;
+    // printf("%p \n",c);
+    // printf("%d \n",*c);
+
+    puts("*********Punteros dobles XD******");
+
+    int** d = &a;
+    printf("La direccion a la que apunta a, apuntada por d (*d=a): %p \n",*d);
+    printf("El valor al que apunta a, apuntado por d (*d=a) (**d=*a): %d \n",**d);
+
+    int k=5;
+    *d = &k;
+    printf("Estamos cambiando la direccion a la que apunta a, %p\n",*d);
+    printf("La direccion a la que apunta a ahora es la direccion de k:  %p \n",a);
+    printf("%d \n",*a);
+    
+    puts("*********ahora vienen las referencias*******");
+
+    int t = 8;
+
+    int& ref = t;
+
+    printf("El valor de t: %d\n", t);
+    printf("El valor de ref es t (ref): %d\n", ref);
+    printf("La direccion de t (&t): %p\n", &t);
+    printf("La direccion de ref es la dir de t (&ref): %p\n", &ref);
+    puts("Por si no te diste cuenta, son lo mismo XP");
+
+    t = 25;
+
+    printf("El valor de t: %d\n", t);
+    printf("El valor de ref es t (ref): %d\n", ref);
+    printf("La direccion de t (&t): %p\n", &t);
+    printf("La direccion de ref es la dir de t (&ref): %p\n", &ref);
+
+    ref = 1000;
+
+    printf("El valor de t: %d\n", t);
+    printf("El valor de ref es t (ref): %d\n", ref);
+    printf("La direccion de t (&t): %p\n", &t);
+    printf("La direccion de ref es la dir de t (&ref): %p\n", &ref);
+
+    puts("*********ahora todo junto*******");
+
+    int *q = &t;
+
+    int& ref2 = *q;
+    int*& ref3 = q;
+
+    printf("%p\n", &ref2);
+    printf("%d\n", ref2);
+    printf("%p\n", ref3);
+
+}
+\end{lstlisting}

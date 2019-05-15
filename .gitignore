@@ -39,3 +39,9 @@
 
 # Ignore VScode
 .vscode
+
+# Ignore latex dump
+*.log
+*.aux
+*.pdf
+*.synctex.gz

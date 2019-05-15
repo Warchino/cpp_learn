@@ -1,0 +1,143 @@
+\begin{lstlisting}[language=C++, caption={Herencia}]
+#include <string>
+
+using namespace std;
+
+class person
+{
+    string name;
+    size_t id;
+
+    public:
+    person(const string& name, size_t id)
+    :name{name}, id{id}
+    {
+
+    }
+    void print() const
+    {
+        printf("(%lu) %s", id, name.c_str());
+    }
+    
+    ~person()
+    {
+        puts("bye");
+    }
+};
+// si es private todo lo que se hereda, es privado hacia afuera
+class student: public person
+{
+    size_t score;
+    public:
+    student(const string& name, size_t id, size_t score)
+    :person{name, id},
+    score{score}
+    {
+    }
+
+    ~student()
+    {
+        puts("Bye student");
+    }
+
+    void print() const
+    {
+        person::print(); // HIDING esconde el metodo de la clase padre
+        printf(" Score %lu ", score);
+    }
+};
+
+int main()
+{
+    // person p{"Jau pepe", 1235423};
+    // p.print();
+    // puts("");
+    
+    // student s{"Pablo Palti", 1235, 95};
+    // s.print();
+    // puts("");
+
+    person* c = new person{"Juan", 123};
+    c->print();
+    delete c;
+
+    student* d = new student{"Omar", 456, 70};
+    d->print();
+    delete d;
+
+    puts("******");
+    person* e = new student("Axel", 32434, 60);
+    ((student*)e)->print();
+    delete e; // llama al destructor de la clase base
+}
+    
+\end{lstlisting}
+
+\begin{lstlisting}[language=C++, caption={Herencia 2}]
+#include <cstdio>
+#include <cstdlib>
+
+class point
+{
+    int x;
+    int y;
+    public:
+        point(int x = 0, int y = 0)
+        :x{x}, y{y}
+        {
+        }
+
+        void print() const
+        {
+            printf("(%d,%d)\n", x, y);
+        }
+
+        ~point()
+        {
+            puts("Bye");
+        }
+        void set_values(int x, int y)
+        {
+            this->x = x;
+            this->y = y;
+        }
+
+};
+
+int main()
+{
+    point p{6,8};
+    p.print();
+    // auto* q = (point*) malloc(sizeof(point)); // no llama al constructor por lo que no sirve
+    point* q = new point(6, 9); // Pide en el HEAP pero es mas lento
+    // new desventajas
+    // no se puede hacer como aritmetica de punteros
+    // tampoco realloc
+
+    q->print();
+    // free(q);
+    delete q;
+
+    point* ps = new point[3];
+    // operador new[]
+    // std::bad_alloc es porque no encuentra espacio en memoria
+    ps[0].set_values(9,5);
+    ps[1].set_values(2,1);
+    ps[2].set_values(0,4);
+    for (size_t i = 0; i < 3; i++)
+    {
+        ps[i].print();
+    }
+    // delete[]
+    delete[] ps;
+}
+
+
+// POD: Plain Old Data
+// Tipo primitivo
+// array de pods
+// structs de pods
+// union de pods
+// para todo esto se puede usar malloc realloc free
+\end{lstlisting}
+

@@ -1,0 +1,386 @@
+\documentclass[11pt,letterpaper]{article}
+\usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[most]{tcolorbox}
+\usepackage[spaces,hyphens]{url}
+\usepackage[colorlinks,allcolors=blue]{hyperref}
+\usepackage{pdfpages}
+\usepackage{xcolor}
+\usepackage{textcomp}
+
+\definecolor{Darkgreen}{rgb}{0,0.4,0}
+\definecolor{listinggray}{gray}{0.9}
+\definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+\lstset{
+backgroundcolor=\color{lbcolor},
+    tabsize=4,    
+%   rulecolor=,
+    language=[GNU]C++,
+        basicstyle=\scriptsize,
+        upquote=true,
+        aboveskip={1.5\baselineskip},
+        columns=fixed,
+        showstringspaces=false,
+        extendedchars=false,
+        breaklines=true,
+        prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+        frame=single,
+        numbers=left,
+        showtabs=false,
+        showspaces=false,
+        showstringspaces=false,
+        identifierstyle=\ttfamily,
+        keywordstyle=\color[rgb]{0,0,1},
+        commentstyle=\color[rgb]{0.026,0.112,0.095},
+        stringstyle=\color[rgb]{0.627,0.126,0.941},
+        numberstyle=\color[rgb]{0.205, 0.142, 0.73},
+%        \lstdefinestyle{C++}{language=C++,style=numbers}’.
+}
+\lstset{
+    backgroundcolor=\color{lbcolor},
+    tabsize=4,
+  language=C++,
+  captionpos=b,
+  tabsize=3,
+  frame=lines,
+  numbers=left,
+  numberstyle=\tiny,
+  numbersep=5pt,
+  breaklines=true,
+  showstringspaces=false,
+  basicstyle=\footnotesize,
+%  identifierstyle=\color{magenta},
+  keywordstyle=\color[rgb]{0,0,1},
+  commentstyle=\color{Darkgreen},
+  stringstyle=\color{red},
+  upquote=true
+  }
+\newtcblisting{commandshell}{colback=black,colupper=white,colframe=yellow!75!black,
+listing only,listing options={language=sh},
+every listing line={\textcolor{green}{\small\ttfamily\bfseries RodrigoMenacho \$> }}}
+
+
+% Packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+% Document
+\begin{document}
+\begin{center}
+    \textbf{Resumen C++}
+\end{center}
+
+\section{Class 1}
+\subsection{Mejoras sobre C}
+\begin{itemize}
+    \item Existe la sobrecarga de funciones sin perder ningun recurso en memoria
+    \item El include de las librerias no termina en .h \textbf{cstdio = stdio.h}
+\end{itemize}
+\subsection{Namespace}
+Es un contenedor de identificador.
+\begin{itemize}
+    \item Variable
+    \item Funciones
+    \item Structs
+    \item Clases
+    \item Tipos Enum
+    \item Namespaces
+\end{itemize}
+Desde Cpp-17 existes Namespaces anidados: \\
+A::B::C
+\subsection{Referencias}
+\begin{quote}
+    Son punteros disfrazados de ovejas.
+\end{quote}
+Porque internamente son punteros.
+Limitaciones: 
+\begin{itemize}
+    \item Inmutables
+    \begin{itemize}
+        \item Establecida la referencia y su referido esa relacion no se puede cambiar
+    \end{itemize}
+    \item No hay aritmetica a referencias 
+    \item Cuando se accede a la referencia se accede al valor del referido
+    \item No hay referencias a NULL
+\end{itemize}
+\subsection{Scoped Enums}
+\begin{lstlisting}[language=C++, caption={Scoped enums}]
+enum class Priority
+{
+	RED, BLUE, BLACK;
+};
+
+enum class Color
+{
+	RED, GREEN, BLUE;
+};
+\end{lstlisting}
+
+\section{Class 2}
+\subsection{Clase y Struct}
+En la clase todo es privado por defecto.\\
+En el struct todo es publico por defecto.
+\subsection{Const al final del metodo}
+El const al final dice que no se modificara los atributos de la clase
+y solo llama a metodos constantes.
+\begin{lstlisting}[language=C++, caption={method() const}]
+void mostrar() const
+{
+    printf("(%zu) %s %s\n",ci, ln, fn);
+}
+\end{lstlisting}
+\subsection{This}
+Es un puntero que representa la instancia.
+
+\begin{lstlisting}[language=C++, caption={this->}]
+Person(const char* fn, const char* ln, size_t ci)
+{
+    strcpy(this->fn, fn);
+    strcpy(this->ln, ln);
+    this->ci = ci;
+}
+\end{lstlisting}
+
+\subsection{Inicializacion Uniforme}
+Es por eso que se crea un objeto con llaves {} para que no se raye el compilador cuando lee parentesis, 
+porque puede compilar como si fuese un metodo.
+
+\begin{lstlisting}[language=C++, caption={Inicializacion con llaves}]
+Person q{"Julian", "Assange", 1961};
+\end{lstlisting}
+
+\section{Class 3}
+\subsection{Initialization List}
+Cuando podemos inicializar los atributos de un constructor usando llaves dentro de la clase.
+\begin{lstlisting}[language=C++, caption={Inicializacion con llaves en constructor}]
+student(size_t id, const char *name)
+    : id{id} //Initialization list
+// forma preferida para inicializar atributos
+{
+    auto len = strlen(name);
+    this->name = (char *)malloc(len + 1);
+    memcpy(this->name, name, len + 1);
+}
+\end{lstlisting}
+
+\subsection{Regla de 3}
+Si existe un malloc es necesario que se reimplemente el destructor, constructor y el operador igual “=”
+de una clase o struct para evitar problemas en compilacion.
+
+\subsection{RAII}
+\begin{quotation}
+    \textbf{Resource adquisition is initialization}
+\end{quotation}
+Es decir, es una caracteristica en C++ donde el elemento que fue creado dentro de un cierto Scope
+se destruye al salir de este scope.
+
+\subsection{Copia}
+\begin{lstlisting}[language=C++, caption={Copia}]
+auto student z{2, "Antonio jose de sucre"};
+auto q = z; // copy
+\end{lstlisting}
+\subsection{Asignacion}
+\begin{lstlisting}[language=C++, caption={Asignacion}]
+student r{666, "norbert"};
+r = q; // Asignacion
+\end{lstlisting}
+
+\section{Class 4}
+Se implemento la clase ztring xD.
+
+\begin{lstlisting}[language=C++, caption={Clase Ztring}]
+#include <cstdio>
+#include <cstring>
+#include <cstdlib>
+
+constexpr size_t MAX = 16;
+
+class ztring
+{
+    char* chars;
+    // SSO: small string optimization
+    char szo[MAX];
+    size_t len;
+    public:
+    ztring(const char* s = "")
+    :len{strlen(s)}
+    {
+        set_string(s);
+    }
+    const char* data() const
+    {
+        return len < MAX ? szo : chars;
+    }
+    ~ztring()
+    {
+        if (len >= MAX)
+        {
+            free(chars);
+        }
+    }
+    ztring(const ztring& s)
+    :len{s.len}
+    {
+        set_string(s.data());
+    }
+
+    ztring& operator=(const ztring& src)
+    {
+        if (this != &src)
+        {
+            return *this;
+        }
+        this->~ztring();
+        len = src.len;
+        set_string(src.data());
+        return *this;
+    }
+
+    ztring operator+(const ztring& s) const
+    {
+        auto nlen = len + s.len;
+        ztring ns;
+        ns.len = nlen;
+        if (nlen >= MAX)
+        {
+            ns.chars = (char*) malloc(nlen+1);
+        }
+        char* str = nlen < MAX ? ns.szo : ns.chars;
+        memcpy(str, data(), len);
+        memcpy(str + len, s.data(), s.len+1);
+        return ns;
+
+    }
+
+    ztring& operator+=(const ztring& src)
+    {
+        auto nlen = len + src.len;
+        if (len >= MAX)
+        {
+            chars = (char*) realloc(chars, nlen+1);
+            memcpy(chars + len, src.data(), src.len+1);
+            len = nlen;
+            return *this;
+        }
+
+        if (nlen >= MAX)
+        {
+            chars = (char*) malloc(nlen+1);
+            memcpy(chars, data(), len);
+            memcpy(chars + len, src.data(), src.len+1);
+            len = nlen;
+            return *this;
+        }
+        memcpy(szo + len, src.data(), src.len+1);
+        len = nlen;
+        return *this;
+    }
+
+    private:
+    void set_string(const char* s)
+    {
+        if (len >= MAX)
+        {
+            chars = (char*) malloc(len+1);
+            memcpy(chars, s, len+1);
+        }else
+        {
+            memcpy(szo, s, len+1);
+        }
+    }
+
+};
+
+\end{lstlisting}
+
+
+\section{Class 5}
+\subsection{Herencia}
+La herencia se lo realiza con los \textbf{:} y se especifica
+si es public, private or protected.
+\begin{lstlisting}[language=C++, caption={Herencia}]
+// si es private todo lo que se hereda, es privado hacia afuera
+class student: public person 
+{
+}
+\end{lstlisting}
+
+\subsection{Hiding}
+Cuando se da la herencia directamente no es posible el polimorfismo por lo cual
+se da el siguiente caso donde se esconde el metodo del padre.
+\begin{lstlisting}[language=C++, caption={Hiding}]
+void print() const
+{
+    person::print(); // HIDING esconde el metodo de la clase padre
+    printf(" Score %lu ", score);
+}
+\end{lstlisting}
+
+\subsection{New}
+El keyword new es una palabra reservada la cual nos permite crear objetos
+del tipo punteros, el cual realiza el pedido de memoria en el HEAP de toda una 
+clase o struct. \par
+A su vez llama al constructor de la clase. 
+\begin{lstlisting}[language=C++, caption={New}]
+// auto* q = (point*) malloc(sizeof(point)); 
+// no llama al constructor por lo que no sirve
+
+point* q = new point(6, 9); // Pide en el HEAP pero es mas lento
+// ***desventajas***
+// No es posible usar aritmetica de punteros
+// Ni realloc
+\end{lstlisting}
+Por cada \textbf{new} debe existir un \textbf{delete}, analogamente en c
+por cada \textbf{malloc} existe un \textbf{free} 
+
+\subsection{new[]}
+Es posible inicializar array de objetos, indicando el numero de objetos que 
+tendra el array.
+\begin{lstlisting}[language=C++, caption={New[ ]}]
+point* ps = new point[3];
+// operador new[]
+// std::bad_alloc es porque no encuentra espacio en memoria
+ps[0].set_values(9,5);
+ps[1].set_values(2,1);
+ps[2].set_values(0,4);
+for (size_t i = 0; i < 3; i++)
+{
+    ps[i].print();
+}
+delete[] ps;
+\end{lstlisting}
+Por cada \textbf{new[ ]} existe un \textbf{delete[ ]}.
+\begin{quote}
+    \textbf{NO OLVIDAR EL DELETE[ ]}
+\end{quote}
+
+\subsection{POD - Plain Old Data}
+Hace referencia a:
+\begin{itemize}
+    \item Tipo primitivo
+    \item Array de pods
+    \item Structs de pods
+    \item Union de pods
+\end{itemize}
+En el cual, para todos estos PODs es posible usar malloc, realloc and free.
+
+\newpage
+\appendix
+\section{Ejemplos de Punteros y Referencias }
+By Carlos, Marcela, Dani, Karen.
+\input{examples.tex}
+
+\section{Code of Class 2}
+\input{a_class2.tex}
+
+\section{Code of Class 3}
+\input{a_class3.tex}
+
+\section{Code of Class 4}
+\input{a_class4.tex}
+
+\section{Code of Class 5}
+\input{a_class5.tex}
+
+\end{document}
