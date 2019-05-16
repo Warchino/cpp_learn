@@ -58,7 +58,7 @@ class student: public person
 
     void print() const override
     {
-        person::print(); // HIDING esconde el metodo de la clase padre
+        // person::print(); // HIDING esconde el metodo de la clase padre
         printf(" Score %lu ", score);
     }
 };

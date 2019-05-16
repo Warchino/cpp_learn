@@ -1,0 +1,154 @@
+\begin{lstlisting}[language=C++, caption={Problemas Herencia virtual 1}]
+#include <string>
+
+class Base
+{
+    public:
+    virtual ~Base(){}
+    virtual std::string to_string() const = 0;
+};
+
+class IComparable : public virtual Base
+{
+    public:
+    virtual int compare_to(const Base& b) const = 0;
+};
+
+class Integer : public virtual Base, public virtual IComparable
+{
+    int n;
+    public:
+        Integer(int n):n{n}{}
+        std::string to_string() const
+        {
+            return std::to_string(n);
+        }
+        int compare_to(const Base& b) const override
+        {
+            // al usar herencia virtual se deshabilita el static_cast
+            // auto& e = static_cast<const Integer&>(b);
+            auto& e = dynamic_cast<const Integer&>(b);
+            return n- e.n;
+        }
+};
+
+class A : public virtual Base
+{
+    public:
+    std::string to_string() const override
+    {
+        return "A";
+    }
+};
+
+class B : public virtual Base
+{
+    // implementacion ambigua
+    // public:
+    // std::string to_string() const override
+    // {
+    //     return "B";
+    // }
+};
+
+class C : public A, public B
+{
+
+};
+
+int main()
+{
+    // Base* b = new Integer{18};
+    // IComparable* c = new Integer{20};
+    // puts(b->to_string().data());
+    // printf("%d\n", c->compare_to(*b));
+    // delete c;
+    // delete b;
+
+    A* a = new C();
+    B* b = new C();
+    puts(a->to_string().data());
+    puts(b->to_string().data());
+    delete a;
+    delete b;
+}
+
+// Problema del triangulo
+
+// Herencia virtual es que discrimina metodos repetidos y quita la ambiguedad
+\end{lstlisting}
+
+\begin{lstlisting}[language=C++, caption={Problemas Herencia virtual 1}]
+#include <cstdio>
+
+struct X
+{
+    int x;
+    virtual ~X(){};
+};
+struct Y : virtual X
+{
+};
+struct Z : virtual X
+{
+};
+struct W final : Y, Z
+{
+};
+
+// Con final acaba la jerarquia
+// struct Aurora : W
+// {
+//     /* data */
+// };
+
+int main()
+{
+    W p;
+    p.x = 45;
+    printf("%d\n", p.x);
+}
+\end{lstlisting}
+
+\begin{lstlisting}[language=C++, caption={Problemas Herencia virtual 1}]
+#include <cstdio>
+
+struct P
+{
+    int a, b;
+public:
+    P(int a, int b)
+    :a{a}, b{b}
+    {
+    }
+    virtual ~P(){}
+};
+
+struct Q : public virtual P
+{
+    int c;
+    public:
+    Q(int a, int b, int c)
+    :P(a,b), c{c}
+    {
+    }
+};
+
+struct R : public virtual Q
+{
+    int d;
+    public:
+    R(int a, int b, int c, int d)
+    :P(a, b), Q(a, b, c),  d{d}
+    {
+    }
+};
+
+int main()
+{
+    R r{1, 2, 3, 4};
+    // explicitamente tenemos que llamar a los constructores de los padres
+    printf("%d %d %d %d", r.a, r.b, r.c, r.d);
+}
+\end{lstlisting}
+

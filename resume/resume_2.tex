@@ -365,6 +365,192 @@ Hace referencia a:
 \end{itemize}
 En el cual, para todos estos PODs es posible usar malloc, realloc and free.
 
+
+\section{Class 6}
+\subsection{Polimorfismo}
+Sucede cuando dos instancias de dos subclases de una misma clase base,
+al recibir un mismo mensaje, reaccionan de diferente manera. \par
+
+\begin{quote}
+    En cpp \textbf{mensaje} es igual a \textbf{metodo}.
+\end{quote}
+Se implementa de la siguiente manera.
+
+\textbf{virtual} para especificar al compilador que el metodo se 
+hara un \textbf{override}. 
+\begin{lstlisting}[language=C++, caption={Metodo del Padre}]
+virtual void print() const
+{
+    printf("(%lu) %s", id, name.c_str());
+}
+\end{lstlisting}
+
+En el metodo del hijo, si se quiere hacer un metodo polimorfico se 
+utiliza le keyword \textbf{override}.
+\begin{lstlisting}[language=C++, caption={Metodo del Hijo}]
+void print() const override
+{
+    person::print();
+    printf(" Score %lu ", score);
+}
+\end{lstlisting}
+
+\paragraph{Observaciones}
+Si se pone virtual entonces se crea un puntero extra en tu objeto
+ que se llama VTABLE
+ que son tablas de elementos virtuales y crece en memoria
+ Y llamar a mtodos virtuales cuesta:
+\begin{quote}
+    De un objeto-$>$vtable-$>$ejecutarMetodo
+\end{quote}
+ El compilador no tiene poder sobre el virtual.
+
+\subsection{Clase Abstracta}
+Las clases ABC.
+\paragraph{Abstract Base Class} las cuales solo tienen firmas
+menos el destructor.
+
+Para declarar una clase abstracta solo es necesario igualar a 0 
+un metodo y asi toda la clase se vuelve abstracta. \par
+Es necesario considerar que las clases abstractas NO pueden ser instanciadas.
+\begin{lstlisting}[language=C++, caption={Declaracion de clase abstracta}]
+struct Animal
+{
+    virtual ~Animal(){};
+    virtual void comunicarse() const = 0;
+};
+\end{lstlisting}
+
+\section{Class 7}
+En la clase se realizo una aplicacion de polimorfismo con clases abstractas.
+Lo cual se mostrara todo el codigo en el appendix.
+\subsection{static cast $<$$>$}
+Es una forma mas sofisticada de castear, porque es mas legible 
+por el programador, en lugar de el metodo clasico de casteo.
+\begin{itemize}
+    \item Lo peculiar de este es que realiza el casteo en tiempo de compilacion.
+    \item No es posible realizar este tipo de casteo si se usa \textit{Herencia virtual}.
+\end{itemize}
+\begin{lstlisting}[language=C++, caption={static cast}]
+return n == static_cast<const Integer&>(src).n;
+\end{lstlisting}
+\subsection{dynamic cast} 
+Es un tipo de casteo dinamico que se realiza en tiempo de ejecucion, el cual
+revisa en la VTABLE (lo que siginifica que al usarlo, por lo menos el objeto en 
+cuestion deberia de tener un metodo virtual).
+\begin{itemize}
+    \item Si se castea con punteros entonces devuelve null si no pertenece a la herencia.
+    \item Si se castea con referencias, cuando no es posible el casteo bota una excepcion.
+\end{itemize}
+\begin{lstlisting}[language=C++, caption={static cast}]
+auto f = dynamic_cast<Integer*>(e);
+\end{lstlisting}
+
+
+\section{Class 8 - Herencia Multiple}
+Se vio ejemplos de herencia multiple.
+
+\begin{lstlisting}[language=C++, caption={Herencia multiple}]
+struct IntChar : Int, Char
+{
+    IntChar(int n, char c)
+    :Int{n}, Char{c}
+    {
+    }
+
+    std::string to_string() const
+    {
+        auto s = Int::to_string();
+        s += ",";
+        s += Char::to_string();
+        return s;
+    }
+};
+\end{lstlisting}
+
+\section{Class 9}
+\subsection{Herencia virtual}
+Herencia virtual es que discrimina metodos repetidos y quita la ambiguedad
+si es que existen metodos ya implementados en jerarquias superiores.
+\begin{lstlisting}[language=C++, caption={Herencia virtual}]
+struct X
+{
+    int x;
+    virtual ~X(){};
+};
+struct Y : virtual X
+{
+};
+struct Z : virtual X
+{
+};
+struct W final : Y, Z
+{
+};
+
+// Con el keyword 'final' acaba la jerarquia
+\end{lstlisting}
+
+
+\section{Class 10}
+\subsection{Excepciones}
+Es un tipo de error el cual puede ser controlado mediante un
+\textit{Exception Handler} (\textbf{Try-catch}) el cual trata la excepcion.\par
+Si la excepcion no es trata por ningun \textit{Exception Handler} , entonces le programa termina.
+\begin{itemize}
+    \item NO se puede agarrar un Segmentation Fault.
+    \item NO se puede agarrar errores Logicos.
+\end{itemize}
+
+\begin{lstlisting}[language=C++, caption={Excepciones}]
+#include <cstdio>
+
+void c()
+{
+    throw 214U;
+    // int* q = nullptr;
+    // *q += 18;
+    // int x = 6, y = 0;
+    // int z = x / y;
+    // Segmentation fault no se puede agarrar
+    // Tampoco errores logicos 
+}
+
+void b()
+{
+    puts("Starting b");
+    c();
+    puts("Ending b");
+}
+
+void a()
+{
+    puts("Stating a");
+    b();
+    puts("Ending a");
+}
+
+
+int main()
+{
+    try
+    {
+        a();
+        puts("Happy bye");
+    }
+    catch(const char* e)
+    {
+        printf("Error: %s\n", e);
+    }
+    catch(int e)
+    {
+        printf("codigo: %d\n", e);
+    }
+    puts("Bye anyway");
+
+}
+\end{lstlisting}
+
 \newpage
 \appendix
 \section{Ejemplos de Punteros y Referencias }
@@ -382,5 +568,20 @@ By Carlos, Marcela, Dani, Karen.
 
 \section{Code of Class 5}
 \input{a_class5.tex}
+
+\section{Code of Class 6}
+\input{a_class6.tex}
+
+\section{Code of Class 7}
+\input{a_class7.tex}
+
+\section{Code of Class 8}
+\input{a_class8.tex}
+
+\section{Code of Class 9}
+\input{a_class9.tex}
+
+\section{Code of Class 10}
+\input{a_class10.tex}
 
 \end{document}
