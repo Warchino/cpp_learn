@@ -78,10 +78,28 @@ class person
     // quie llama a los contructores de los objetos.
     // Pero hace una copia al crear el objeto asi nomas
 public:
-    person(const mystring& fn, const mystring& ln)
-    : fn{fn}, ln{ln}
+    // person(const mystring& fn, const mystring& ln)
+    // : fn{fn}, ln{ln}
+    // {
+    //     puts("Constructor persona 1");
+    // }
+    // se podria hacer este constructor con puras movidas porque eso es lo que se espra
+    // person(const mystring& fn, const mystring& ln)
+    // : fn{fn}, ln{ln}
+    // {
+    //     puts("Constructor persona 1");
+    // }
+
+    // aqui entra la solucion perfectforwarding
+
+    template<typename S1, typename S2>
+    person(S1&& fn, S2&& ln)
+    // Transforma el tipo de fn al tipo del que recibe
+    : fn{std::forward<S1>(fn)},
+    ln{std::forward<S2>(ln)}
     {
-        puts("Constructor persona 1");
+        puts("persona Constructor perfectforward");
+
     }
 
     void show() const
@@ -89,7 +107,16 @@ public:
         printf("%s,%s\n", fn.data(), ln.data());
     }
 };
-
+void inc(int& n)
+{
+    n++;
+}
+// Hay varias posibilidades para N entonces se hace un forward
+template <typename N, typename Proc>
+void invoke (N&& n, Proc p)
+{
+    p(std::forward<N>(n));
+}
 
 int main()
 {
@@ -101,6 +128,7 @@ int main()
 
     // Genera constrcutor copia de estos
     // pero lo ideal es que deberain de usar el std::move
+    // Estos datos lo transforam en rvalue reference y hara la movida
     person p1{"Tyrion", "Vadin"};
 // deberai de llamar a los consturcotres copia
     auto p2 = p1;
@@ -110,5 +138,18 @@ int main()
     p3.show();
     p1.show();
 
+// Aqui genera otro constructor que recibe const rvalue y por lo tanto hara una COPIA
+    person p4{j, s};
+    p4.show();
+
+
+// PerfectForwarding sirve para evitar varios constrcutores
+// Incluso invocadores
+
+    int n = 4;
+    invoke(n, inc);
+    printf("%d\n", n);
     return 0;
+
+
 }
