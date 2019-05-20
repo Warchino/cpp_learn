@@ -1,0 +1,131 @@
+\section{Class 3}
+
+\subsection{Function Object}
+Es objeto que se comporta como una funcion. \\
+Sirve cuando se tiene un objecto en el que se necesita procesar ciertos
+metodos y atributos los cuales se enceuntran almacenados y cambian en el tiempo. \par
+Practicamente es una sobrecarga al operador \textit{\textbf{()}}.
+\begin{lstlisting}[language=C++, caption={Functor}]
+    struct P
+    {
+        void operator()(int a, int b) const
+        {
+            printf("%d\n", a+b);
+        }
+    };
+\end{lstlisting}
+
+
+\subsection{Funcion Lambda o Anonima}
+Una funcion lambda es una funcion declara en-linea, que puede ser \textbf{functor} 
+o simplemente un puntero a funcion.
+\begin{itemize}
+    \item Si captura variables dentro del \textbf{[]}, es un functor.
+    \item Si no, entonces es simplemente un puntero a funcion.
+\end{itemize}
+\begin{lstlisting}[language=C++, caption={Funcion lambda}]
+    f([](int x, int y){return x+y;}, 50, 50);
+\end{lstlisting}
+
+\subsection{Policies}
+Policies es una forma de evitar el polimorfismo
+se evita la herencia, pero se realiza en tiempo de compilacion por lo que se vuelve mas
+lento al compilar. \\
+Si es necesario agregar nuevos objetos el problema esta en aumentar
+los tipos.
+
+\subsubsection{Antes de Policies}
+\begin{lstlisting}[language=C++, caption={Before Policies}]
+    struct Animal
+    {
+        virtual ~Animal(){}
+        virtual void hablar() const = 0;
+    };
+
+    struct vaca : Animal
+    {
+        void hablar() const override
+        {
+            puts("muuuuuu");
+        }
+    };
+\end{lstlisting}
+
+\subsubsection{Despues de Policies}
+\begin{lstlisting}[language=C++, caption={Using Policies}]
+    template <typename HablarPolicy>
+    struct Animal
+    {
+        HablarPolicy hp;
+        void hablar() const
+        {
+            hp.hablar();
+        }
+    };
+
+    struct hablar_perro
+    {
+        void hablar() const
+        {
+            puts("woof");
+        }
+    };
+    using perro = Animal<hablar_perro>;
+\end{lstlisting}
+
+
+Cabe denotar que el rendimiento del programa mejora con el uso de templates
+a comparacion de programacion orientada a objetos.
+
+\subsection{Ejemplo Policies}
+
+\subsubsection*{Caso 1}
+Se tiene este tipo de implementacion.
+\begin{lstlisting}[language=C++, caption={Solucion no generica}]
+    template <typename T>
+    struct W
+    {
+        T* val;
+        ~W()
+        {
+            delete val;
+    // Esta implementacion no sirve porque no siempre le van a llegar 
+    // punteros por new, porque es posible que le lleguen punteros por malloc
+        }
+    };
+\end{lstlisting}
+
+\subsubsection*{Solucion 1}
+
+\begin{lstlisting}[language=C++, caption={Policies example}]
+    // Se creo un template para los diferentes tipo de liberar memoria
+    template <typename T>
+    struct deleter
+    {
+        void release(T* x)
+        {
+            delete x;
+        }
+    };
+    // especializacion
+    template <>
+    struct deleter<char>
+    {
+        void release(char* x)
+        {
+            free(x);
+        }
+    };
+
+
+    template <typename T, typename Deleter = deleter<T> >
+    struct W
+    {
+        T* val;
+        ~W()
+        {
+            Deleter d;
+            d.release(val);
+        }
+    };
+\end{lstlisting}
