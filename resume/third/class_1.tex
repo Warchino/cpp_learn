@@ -1,0 +1,89 @@
+\section{Class 1}
+\subsection{Templates}
+Es una herramienta que nos permite reutilizar un cierto codigo con distintas variables, por ejemplo:
+\begin{lstlisting}[language=C++, caption={Templates 1}]
+int sum(int a, int b)
+{
+    return a + b;
+}
+
+double sum(double a, double b)
+{
+    return a + b;
+}
+\end{lstlisting}
+Por esta razon al tener la misma estructura, los templates son versatiles.
+\begin{lstlisting}[language=C++, caption={Templates 2}]
+// typename == class es lo mismo
+template <class T>
+T sum(T a, T b)
+{
+    return a + b;
+}
+\end{lstlisting}
+
+\subsection{Typename explicito en Template}
+Hay casos en que se puede dar que el \textbf{typename o class} sea explicito 
+al usar un template, para eso se lo realiza de la siguiente manera.
+\begin{lstlisting}[language=C++, caption={'T explicito'}]
+auto s = sum<std::string>("hello", "world");
+\end{lstlisting}
+
+
+\subsection{Sobrecarga de operador}
+Es posible hacer la sobre carga de un operador de una estructura (struct, class) fuera de esta,
+porque es posible que no se pueda modificar la estructura por dentro.
+
+\begin{lstlisting}[language=C++, caption={'Overload'}]
+struct U
+{
+    int n;
+    
+};
+// Sobre carga de operador
+U operator+(const U& a, const U& b)
+{
+    return U{a.n + b.n};
+}
+\end{lstlisting}
+
+\subsection{Template como herramienta al compilar}
+Es posible usar el compilador para calculos muy complejos antes del tiempo de ejecucion,
+Por ejemplo:
+\begin{lstlisting}[language=C++, caption={'Calculos complejos'}]
+template <int N>
+void star()
+{
+    for (size_t i = 0; i < N; i++)
+    {
+        printf("*");
+    }
+    puts("");
+}
+int main()
+{
+    // Esto lo ejecuta el compilador.
+    star<6>();
+}
+\end{lstlisting}
+
+
+\subsection{Diferencias entre const y constexpr}
+La diferencia abismal entre ambos esta en que tiempo se ejecuta:
+\begin{itemize}
+    \item \textbf{const} se ejecuta en tiempo de ejecucion.
+    \item \textbf{constexpr} lo hace en tiempo de compilacion.
+\end{itemize}
+
+\subsection{Ventajas y desventajas}
+Se hizo un ejemplo de LinkedList[1].
+\subsubsection{Ventajas}
+\begin{itemize}
+    \item Codigo optimo para el tipo de dato usado.
+    \item Solo genera codigo de las funciones que usa.
+\end{itemize}
+\subsubsection{Desventajas}
+\begin{itemize}
+    \item El compilador tiene que conocer la implementacion, es por eso que si se usa templates,
+    todo el codigo debe estar en el header (.h).
+\end{itemize}

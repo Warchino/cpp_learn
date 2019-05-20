@@ -1,0 +1,100 @@
+\section{Class 2}
+
+\subsection{Especializacion de Templates}
+Puede suceder en ciertos casos, los typos T del template,
+se comportan de manera distinta, como la impresion de un double a un integer 
+es diferente, por ello se crearon las Especializaciones.
+\begin{lstlisting}[language=C++, caption={'Especializacion 1'}]
+    template <typename T>
+    void f(T n)
+    {
+        printf("%d\n", n);
+    }
+
+
+    // Especializacion
+    template <>
+    void f<double> (double n)
+    {
+        printf("%f\n", n);
+    }
+\end{lstlisting}
+ 
+\subsection{Especializacion de clase}
+Hasta es posible realizar la especializacion de una clase.
+\begin{lstlisting}[language=C++, caption={'Especializacion de clase'}]
+    template <class T>
+    class Wrapper
+    {
+        T value;
+    public:
+        Wrapper(const T& x) : value{x}
+        {}
+        const T& get() const
+        {
+            return value;
+        }
+    };
+
+    struct Point
+    {
+        int x, y;
+    };
+
+    // Especializacion de clase
+    template <>
+    class Wrapper<Point>
+    {
+        Point p;
+    public:
+        Wrapper(const Point& p) : p{p} {}
+        void print() const
+        {
+            printf("(%d %d)\n", p.x, p.y);
+        }
+    };
+\end{lstlisting}
+Donde se puede denotar que la especializacion se encuentra al lado del
+nombre de la clase, y el keyword \textbf{template} sin argumentos.
+\begin{lstlisting}[language=C++, caption={'Especializacion'}]
+    template <>
+    class Wrapper<Point>
+    {...}
+\end{lstlisting}
+
+\subsection{Especializacion parcial}
+Es interesante porque tambien la especializacion se puede dar de manera parcial.
+\begin{lstlisting}[language=C++, caption={'Especializacion parcial'}]
+    template <class T, class U>
+    struct Q
+    {
+        T a;
+        U b;
+        auto sum() const -> decltype(a + b)
+        {
+            return a + b;
+        }
+    };
+
+    // Aca solo se especializa el parametro U por un string.
+    template <typename T>
+    struct Q<T, std::string>
+    {
+        T a;
+        std::string b;
+
+        void print() const
+        {
+            puts((b + std::to_string(a)).data());
+        }
+    };
+\end{lstlisting}
+
+\subsection{Decltype}
+El keyword \textbf{decltype} devuelve el tipo de dato de un elemento.
+\begin{lstlisting}[language=C++, caption={decltype}]
+    int a = 2;
+    decltype(a) b = a;
+\end{lstlisting}
+
+
