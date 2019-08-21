@@ -1,6 +1,13 @@
+% Para crear capitulos a tu documento se utiliza el keyword section{"Nombre del capitulo"}
 \section{Class 1}
+% Sigue el mismo formato para subcapitulos
 \subsection{Templates}
 Es una herramienta que nos permite reutilizar un cierto codigo con distintas variables, por ejemplo:
+
+% lstlisting es un comando para poner codigo pero
+% Este es el comando personalizado que se vio en el header del documento
+% donde se puede poner un lenguaje en especifico y este lo colorea de una 
+% manera mas pintuda, tiene su begin y su end 
 \begin{lstlisting}[language=C++, caption={Templates 1}]
 int sum(int a, int b)
 {
@@ -70,6 +77,10 @@ int main()
 
 \subsection{Diferencias entre const y constexpr}
 La diferencia abismal entre ambos esta en que tiempo se ejecuta:
+
+% itemize
+% es un comando que sirve para poner listas con punto
+% para crear un nuevo item se utiliza el comando \item
 \begin{itemize}
     \item \textbf{const} se ejecuta en tiempo de ejecucion.
     \item \textbf{constexpr} lo hace en tiempo de compilacion.

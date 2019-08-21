@@ -1,4 +1,10 @@
+% Aqui se define caracteristicas del documento
+% como tamanio de las letras, el papel
+% Lo que esta entre llaves {article} significa que el documento es de tipo articulo
 \documentclass[11pt,letterpaper]{article}
+
+
+% Son como las dependencias que utiliza latex para hacer el documento
 \usepackage[top=1in,bottom=1in,left=1in,right=1in]{geometry}
 \usepackage{xcolor}
 \usepackage{listings}
@@ -8,14 +14,20 @@
 \usepackage{pdfpages}
 \usepackage{xcolor}
 \usepackage{textcomp}
+\usepackage{amsmath}
+\usepackage{graphicx}
 
+
+% define color es como un typedef en c
 \definecolor{Darkgreen}{rgb}{0,0.4,0}
 \definecolor{listinggray}{gray}{0.9}
 \definecolor{lbcolor}{rgb}{0.9,0.9,0.9}
+
+% Aqui se modifica el comando lstset con ciertas caracteristicas
+% para mostrar codigo
 \lstset{
 backgroundcolor=\color{lbcolor},
     tabsize=4,    
-%   rulecolor=,
     language=[GNU]C++,
         basicstyle=\scriptsize,
         upquote=true,
@@ -56,17 +68,11 @@ backgroundcolor=\color{lbcolor},
   stringstyle=\color{red},
   upquote=true
   }
-\newtcblisting{commandshell}{colback=black,colupper=white,colframe=yellow!75!black,
-listing only,listing options={language=sh},
-every listing line={\textcolor{green}{\small\ttfamily\bfseries RodrigoMenacho \$> }}}
 
-
-% Packages
-\usepackage{amsmath}
-\usepackage{graphicx}
-
-% Document
+% Aqui empieza el documento tiene su begin y end
 \begin{document}
+
+% Aqui empieza el titulo de pagina con ciertas caracteristicas
 \begin{titlepage}
     \vspace*{\stretch{1.0}}
     \begin{center}
@@ -75,6 +81,9 @@ every listing line={\textcolor{green}{\small\ttfamily\bfseries RodrigoMenacho \$
     \vspace*{\stretch{2.0}}
  \end{titlepage}
 
+% aca se puede continuar el documento pero para hacerlo mas legible
+% se crean nuevos archivos .tex pero los cuales ya no tienen el encabezado 
+% que se vio previamente, sino directo va el contenido
 \input{class_1.tex}
 \input{class_2.tex}
 \input{class_3.tex}
